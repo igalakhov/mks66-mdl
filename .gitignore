@@ -11,6 +11,7 @@ CMakeLists.txt
 *.jpg
 resources/
 renders/
+build/
 
 # Prerequisites
 *.d

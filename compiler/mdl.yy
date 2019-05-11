@@ -3,18 +3,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "parser.h"
-#include "matrix.h"
+#include "../compiler/parser.h"
+#include "../matrix/transformation_matrix.h"
+#include "../compiler/symbol_table.h"
 
 #define YYERROR_VERBOSE 1
 
-  SYMTAB *s;
+  SymbolTable * s = new SymbolTable();
   struct light *l;
   struct constants *c;
   struct command op[MAX_COMMANDS];
-  struct matrix *m;
-  int lastop=0;
-  int lineno=0;
+  TransformationMatrix * m;
+  int lastop = 0;
+  int lineno = 0;
   %}
 
 
@@ -69,8 +70,8 @@ SPHERE DOUBLE DOUBLE DOUBLE DOUBLE STRING
   op[lastop].op.sphere.d[3] = 0;
   op[lastop].op.sphere.r = $5;
   op[lastop].op.sphere.constants = NULL;
-  m = (struct matrix *)new_matrix(4,4);
-  op[lastop].op.sphere.cs = add_symbol($6,SYM_MATRIX,m);
+  m = TransformationMatrix::zero();
+  op[lastop].op.sphere.cs = s->add_symbol($6,SYM_MATRIX,m);
   lastop++;
 }|
 SPHERE STRING DOUBLE DOUBLE DOUBLE DOUBLE
@@ -84,7 +85,7 @@ SPHERE STRING DOUBLE DOUBLE DOUBLE DOUBLE
   op[lastop].op.sphere.r = $6;
   op[lastop].op.sphere.cs = NULL;
   c = (struct constants *)malloc(sizeof(struct constants));
-  op[lastop].op.sphere.constants = add_symbol($2,SYM_CONSTANTS,c);
+  op[lastop].op.sphere.constants = s->add_symbol($2,SYM_CONSTANTS,c);
   lastop++;
 }|
 SPHERE STRING DOUBLE DOUBLE DOUBLE DOUBLE STRING
@@ -97,10 +98,10 @@ SPHERE STRING DOUBLE DOUBLE DOUBLE DOUBLE STRING
   op[lastop].op.sphere.d[3] = 0;
   op[lastop].op.sphere.r = $6;
   op[lastop].op.sphere.constants = NULL;
-  m = (struct matrix *)new_matrix(4,4);
-  op[lastop].op.sphere.cs = add_symbol($7,SYM_MATRIX,m);
+  m = TransformationMatrix::zero();
+  op[lastop].op.sphere.cs = s->add_symbol($7,SYM_MATRIX,m);
   c = (struct constants *)malloc(sizeof(struct constants));
-  op[lastop].op.sphere.constants = add_symbol($2,SYM_CONSTANTS,c);
+  op[lastop].op.sphere.constants = s->add_symbol($2,SYM_CONSTANTS,c);
   lastop++;
 }|
 
@@ -130,8 +131,8 @@ TORUS DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE STRING
   op[lastop].op.torus.r0 = $5;
   op[lastop].op.torus.r1 = $6;
   op[lastop].op.torus.constants = NULL;
-  m = (struct matrix *)new_matrix(4,4);
-  op[lastop].op.torus.cs = add_symbol($7,SYM_MATRIX,m);
+  m = TransformationMatrix::zero();
+  op[lastop].op.torus.cs = s->add_symbol($7,SYM_MATRIX,m);
   lastop++;
 }|
 TORUS STRING DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE
@@ -146,7 +147,7 @@ TORUS STRING DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE
   op[lastop].op.torus.r1 = $7;
   op[lastop].op.torus.cs = NULL;
   c = (struct constants *)malloc(sizeof(struct constants));
-  op[lastop].op.torus.constants = add_symbol($2,SYM_CONSTANTS,c);
+  op[lastop].op.torus.constants = s->add_symbol($2,SYM_CONSTANTS,c);
 
   lastop++;
 }|
@@ -161,9 +162,9 @@ TORUS STRING DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE STRING
   op[lastop].op.torus.r0 = $6;
   op[lastop].op.torus.r1 = $7;
   c = (struct constants *)malloc(sizeof(struct constants));
-  op[lastop].op.torus.constants = add_symbol($2,SYM_CONSTANTS,c);
-  m = (struct matrix *)new_matrix(4,4);
-  op[lastop].op.torus.cs = add_symbol($8,SYM_MATRIX,m);
+  op[lastop].op.torus.constants = s->add_symbol($2,SYM_CONSTANTS,c);
+  m = TransformationMatrix::zero();
+  op[lastop].op.torus.cs = s->add_symbol($8,SYM_MATRIX,m);
 
   lastop++;
 }|
@@ -199,8 +200,8 @@ BOX DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE STRING
   op[lastop].op.box.d1[3] = 0;
 
   op[lastop].op.box.constants = NULL;
-  m = (struct matrix *)new_matrix(4,4);
-  op[lastop].op.box.cs = add_symbol($8,SYM_MATRIX,m);
+  m = TransformationMatrix::zero();
+  op[lastop].op.box.cs = s->add_symbol($8,SYM_MATRIX,m);
   lastop++;
 }|
 BOX STRING DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE
@@ -216,7 +217,7 @@ BOX STRING DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE
   op[lastop].op.box.d1[2] = $8;
   op[lastop].op.box.d1[3] = 0;
   c = (struct constants *)malloc(sizeof(struct constants));
-  op[lastop].op.box.constants = add_symbol($2,SYM_CONSTANTS,c);
+  op[lastop].op.box.constants = s->add_symbol($2,SYM_CONSTANTS,c);
   op[lastop].op.box.cs = NULL;
   lastop++;
 }|
@@ -233,9 +234,9 @@ BOX STRING DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE STRING
   op[lastop].op.box.d1[2] = $8;
   op[lastop].op.box.d1[3] = 0;
   c = (struct constants *)malloc(sizeof(struct constants));
-  op[lastop].op.box.constants = add_symbol($2,SYM_CONSTANTS,c);
-  m = (struct matrix *)new_matrix(4,4);
-  op[lastop].op.box.cs = add_symbol($9,SYM_MATRIX,m);
+  op[lastop].op.box.constants = s->add_symbol($2,SYM_CONSTANTS,c);
+  m = TransformationMatrix::zero();
+  op[lastop].op.box.cs = s->add_symbol($9,SYM_MATRIX,m);
 
   lastop++;
 }|
@@ -271,8 +272,8 @@ LINE DOUBLE DOUBLE DOUBLE STRING DOUBLE DOUBLE DOUBLE
   op[lastop].op.line.p1[2] = $8;
   op[lastop].op.line.p1[3] = 0;
   op[lastop].op.line.constants = NULL;
-  m = (struct matrix *)new_matrix(4,4);
-  op[lastop].op.line.cs0 = add_symbol($5,SYM_MATRIX,m);
+  m = TransformationMatrix::zero();
+  op[lastop].op.line.cs0 = s->add_symbol($5,SYM_MATRIX,m);
   op[lastop].op.line.cs1 = NULL;
   lastop++;
 }|
@@ -290,8 +291,8 @@ LINE DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE STRING
   op[lastop].op.line.p1[3] = 0;
   op[lastop].op.line.constants = NULL;
   op[lastop].op.line.cs0 = NULL;
-  m = (struct matrix *)new_matrix(4,4);
-  op[lastop].op.line.cs1 = add_symbol($8,SYM_MATRIX,m);
+  m = TransformationMatrix::zero();
+  op[lastop].op.line.cs1 = s->add_symbol($8,SYM_MATRIX,m);
   lastop++;
 }|
 LINE DOUBLE DOUBLE DOUBLE STRING DOUBLE DOUBLE DOUBLE STRING
@@ -307,10 +308,10 @@ LINE DOUBLE DOUBLE DOUBLE STRING DOUBLE DOUBLE DOUBLE STRING
   op[lastop].op.line.p1[2] = $8;
   op[lastop].op.line.p1[3] = 0;
   op[lastop].op.line.constants = NULL;
-  m = (struct matrix *)new_matrix(4,4);
-  op[lastop].op.line.cs0 = add_symbol($5,SYM_MATRIX,m);
-  m = (struct matrix *)new_matrix(4,4);
-  op[lastop].op.line.cs1 = add_symbol($9,SYM_MATRIX,m);
+  m = TransformationMatrix::zero();
+  op[lastop].op.line.cs0 = s->add_symbol($5,SYM_MATRIX,m);
+  m = TransformationMatrix::zero();
+  op[lastop].op.line.cs1 = s->add_symbol($9,SYM_MATRIX,m);
   lastop++;
 }|
 /* now do constants, and constants with the cs stuff */
@@ -327,7 +328,7 @@ LINE STRING DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE
   op[lastop].op.line.p1[2] = $8;
   op[lastop].op.line.p1[3] = 0;
   c = (struct constants *)malloc(sizeof(struct constants));
-  op[lastop].op.line.constants = add_symbol($2,SYM_CONSTANTS,c);
+  op[lastop].op.line.constants = s->add_symbol($2,SYM_CONSTANTS,c);
   op[lastop].op.line.cs0 = NULL;
   op[lastop].op.line.cs1 = NULL;
   lastop++;
@@ -345,9 +346,9 @@ LINE STRING DOUBLE DOUBLE DOUBLE STRING DOUBLE DOUBLE DOUBLE
   op[lastop].op.line.p1[2] = $9;
   op[lastop].op.line.p1[3] = 0;
   c = (struct constants *)malloc(sizeof(struct constants));
-  op[lastop].op.line.constants = add_symbol($2,SYM_CONSTANTS,c);
-  m = (struct matrix *)new_matrix(4,4);
-  op[lastop].op.line.cs0 = add_symbol($6,SYM_MATRIX,m);
+  op[lastop].op.line.constants = s->add_symbol($2,SYM_CONSTANTS,c);
+  m = TransformationMatrix::zero();
+  op[lastop].op.line.cs0 = s->add_symbol($6,SYM_MATRIX,m);
   op[lastop].op.line.cs1 = NULL;
   lastop++;
 }|
@@ -364,10 +365,10 @@ LINE STRING DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE STRING
   op[lastop].op.line.p1[2] = $8;
   op[lastop].op.line.p1[3] = 0;
   c = (struct constants *)malloc(sizeof(struct constants));
-  op[lastop].op.line.constants = add_symbol($2,SYM_CONSTANTS,c);
+  op[lastop].op.line.constants = s->add_symbol($2,SYM_CONSTANTS,c);
   op[lastop].op.line.cs0 = NULL;
-  m = (struct matrix *)new_matrix(4,4);
-  op[lastop].op.line.cs1 = add_symbol($9,SYM_MATRIX,m);
+  m = TransformationMatrix::zero();
+  op[lastop].op.line.cs1 = s->add_symbol($9,SYM_MATRIX,m);
   op[lastop].op.line.cs0 = NULL;
   lastop++;
 }|
@@ -384,11 +385,11 @@ LINE STRING DOUBLE DOUBLE DOUBLE STRING DOUBLE DOUBLE DOUBLE STRING
   op[lastop].op.line.p1[2] = $9;
   op[lastop].op.line.p1[3] = 0;
   c = (struct constants *)malloc(sizeof(struct constants));
-  op[lastop].op.line.constants = add_symbol($2,SYM_CONSTANTS,c);
-  m = (struct matrix *)new_matrix(4,4);
-  op[lastop].op.line.cs0 = add_symbol($6,SYM_MATRIX,m);
-  m = (struct matrix *)new_matrix(4,4);
-  op[lastop].op.line.cs1 = add_symbol($10,SYM_MATRIX,m);
+  op[lastop].op.line.constants = s->add_symbol($2,SYM_CONSTANTS,c);
+  m = TransformationMatrix::zero();
+  op[lastop].op.line.cs0 = s->add_symbol($6,SYM_MATRIX,m);
+  m = TransformationMatrix::zero();
+  op[lastop].op.line.cs1 = s->add_symbol($10,SYM_MATRIX,m);
   lastop++;
 }|
 
@@ -407,7 +408,7 @@ MESH STRING CO STRING
   op[lastop].opcode = MESH;
   strcpy(op[lastop].op.mesh.name,$4);
   c = (struct constants *)malloc(sizeof(struct constants));
-  op[lastop].op.mesh.constants = add_symbol($2,SYM_CONSTANTS,c);
+  op[lastop].op.mesh.constants = s->add_symbol($2,SYM_CONSTANTS,c);
   op[lastop].op.mesh.cs = NULL;
   lastop++;
 } |
@@ -417,9 +418,9 @@ MESH STRING CO STRING STRING
   op[lastop].opcode = MESH;
   strcpy(op[lastop].op.mesh.name,$4);
   c = (struct constants *)malloc(sizeof(struct constants));
-  op[lastop].op.mesh.constants = add_symbol($2,SYM_CONSTANTS,c);
-  m = (struct matrix *)new_matrix(4,4);
-  op[lastop].op.mesh.cs = add_symbol($5,SYM_MATRIX,m);
+  op[lastop].op.mesh.constants = s->add_symbol($2,SYM_CONSTANTS,c);
+  m = TransformationMatrix::zero();
+  op[lastop].op.mesh.cs = s->add_symbol($5,SYM_MATRIX,m);
   lastop++;
 } |
 
@@ -431,7 +432,7 @@ MOVE DOUBLE DOUBLE DOUBLE STRING
   op[lastop].op.move.d[1] = $3;
   op[lastop].op.move.d[2] = $4;
   op[lastop].op.move.d[3] = 0;
-  op[lastop].op.move.p = add_symbol($5,SYM_VALUE,0);
+  op[lastop].op.move.p = s->add_symbol($5,SYM_VALUE,0);
   lastop++;
 }|
 MOVE DOUBLE DOUBLE DOUBLE
@@ -454,7 +455,7 @@ SCALE DOUBLE DOUBLE DOUBLE STRING
   op[lastop].op.scale.d[1] = $3;
   op[lastop].op.scale.d[2] = $4;
   op[lastop].op.scale.d[3] = 0;
-  op[lastop].op.scale.p = add_symbol($5,SYM_VALUE,0);
+  op[lastop].op.scale.p = s->add_symbol($5,SYM_VALUE,0);
   lastop++;
 }|
 SCALE DOUBLE DOUBLE DOUBLE
@@ -489,7 +490,7 @@ ROTATE STRING DOUBLE STRING
     }
 
   op[lastop].op.rotate.degrees = $3;
-  op[lastop].op.rotate.p = add_symbol($4,SYM_VALUE,0);
+  op[lastop].op.rotate.p = s->add_symbol($4,SYM_VALUE,0);
   lastop++;
 }|
 ROTATE STRING DOUBLE
@@ -541,7 +542,7 @@ SAVE STRING
 {
   lineno++;
   op[lastop].opcode = SAVE;
-  op[lastop].op.save.p = add_symbol($2,SYM_FILE,0);
+  op[lastop].op.save.p = s->add_symbol($2,SYM_FILE,0);
   lastop++;
 }|
 
@@ -561,7 +562,7 @@ LIGHT STRING DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE
   op[lastop].op.light.c[1] = $7;
   op[lastop].op.light.c[2] = $8;
   op[lastop].op.light.c[3] = 0;
-  op[lastop].op.light.p = add_symbol($2,SYM_LIGHT,l);
+  op[lastop].op.light.p = s->add_symbol($2,SYM_LIGHT,l);
   lastop++;
 }|
 
@@ -588,7 +589,7 @@ CONSTANTS STRING DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE
   c->green = 0;
   c->blue = 0;
 
-  op[lastop].op.constants.p =  add_symbol($2,SYM_CONSTANTS,c);
+  op[lastop].op.constants.p =  s->add_symbol($2,SYM_CONSTANTS,c);
   op[lastop].opcode=CONSTANTS;
   lastop++;
 }|
@@ -615,7 +616,7 @@ CONSTANTS STRING DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE 
   c->red = $12;
   c->green = $13;
   c->blue = $14;
-  op[lastop].op.constants.p =  add_symbol($2,SYM_CONSTANTS,c);
+  op[lastop].op.constants.p =  s->add_symbol($2,SYM_CONSTANTS,c);
   op[lastop].opcode=CONSTANTS;
   lastop++;
 }|
@@ -624,8 +625,8 @@ SAVE_COORDS STRING
 {
   lineno++;
   op[lastop].opcode = SAVE_COORDS;
-  m = new_matrix(4,4);
-  op[lastop].op.save_coordinate_system.p = add_symbol($2,SYM_MATRIX,m);
+  m = TransformationMatrix::zero();
+  op[lastop].op.save_coordinate_system.p = s->add_symbol($2,SYM_MATRIX,m);
   lastop++;
 }|
 
@@ -662,8 +663,8 @@ TEXTURE STRING DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE DOUBLE DO
   op[lastop].op.texture.d3[1] = $13;
   op[lastop].op.texture.d3[2] = $14;
   op[lastop].op.texture.cs = NULL;
-  op[lastop].op.texture.constants =  add_symbol("",SYM_CONSTANTS,c);
-  op[lastop].op.texture.p = add_symbol($2,SYM_FILE,0);
+  op[lastop].op.texture.constants =  s->add_symbol("",SYM_CONSTANTS,c);
+  op[lastop].op.texture.p = s->add_symbol($2,SYM_FILE,0);
   lastop++;
 }|
 
@@ -671,8 +672,7 @@ SET STRING DOUBLE
 {
   lineno++;
   op[lastop].opcode = SET;
-  op[lastop].op.set.p = add_symbol($2,SYM_VALUE,0);
-  set_value(op[lastop].op.set.p,$3);
+  op[lastop].op.set.p = s->add_symbol($2,SYM_VALUE,0);
   op[lastop].op.set.val = $3;
   lastop++;
 }|
@@ -681,14 +681,14 @@ BASENAME STRING
 {
   lineno++;
   op[lastop].opcode = BASENAME;
-  op[lastop].op.basename.p = add_symbol($2,SYM_STRING,0);
+  op[lastop].op.basename.p = s->add_symbol($2,SYM_STRING,0);
   lastop++;
 }|
 SAVE_KNOBS STRING
 {
   lineno++;
   op[lastop].opcode = SAVE_KNOBS;
-  op[lastop].op.save_knobs.p = add_symbol($2,SYM_STRING,0);
+  op[lastop].op.save_knobs.p = s->add_symbol($2,SYM_STRING,0);
   lastop++;
 }|
 
@@ -698,8 +698,8 @@ TWEEN DOUBLE DOUBLE STRING STRING
   op[lastop].opcode = TWEEN;
   op[lastop].op.tween.start_frame = $2;
   op[lastop].op.tween.end_frame = $3;
-  op[lastop].op.tween.knob_list0 = add_symbol($4,SYM_STRING,0);
-  op[lastop].op.tween.knob_list1 = add_symbol($5,SYM_STRING,0);
+  op[lastop].op.tween.knob_list0 = s->add_symbol($4,SYM_STRING,0);
+  op[lastop].op.tween.knob_list1 = s->add_symbol($5,SYM_STRING,0);
   lastop++;
 }|
 
@@ -715,7 +715,7 @@ VARY STRING DOUBLE DOUBLE DOUBLE DOUBLE
 {
   lineno++;
   op[lastop].opcode = VARY;
-  op[lastop].op.vary.p = add_symbol($2,SYM_STRING,0);
+  op[lastop].op.vary.p = s->add_symbol($2,SYM_STRING,0);
   op[lastop].op.vary.start_frame = $3;
   op[lastop].op.vary.end_frame = $4;
   op[lastop].op.vary.start_val = $5;
@@ -727,7 +727,7 @@ SHADING SHADING_TYPE
 {
   lineno++;
   op[lastop].opcode = SHADING;
-  op[lastop].op.shading.p = add_symbol($2,SYM_STRING,0);
+  op[lastop].op.shading.p = s->add_symbol($2,SYM_STRING,0);
   lastop++;
 }|
 SETKNOBS DOUBLE
