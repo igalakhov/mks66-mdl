@@ -2,12 +2,11 @@
 
 #include "parser.h"
 #include "symbol_table.h"
-#include "/mdl.tab.h"
+#include "../build/mdl.tab.hh"
 
 
 void print_pcode()
 {
-    print_symtab();
     int i;
     for (i=0;i<lastop;i++)
     {
@@ -116,7 +115,7 @@ void print_pcode()
             case SET:
                 printf("Set: %s %6.2f",
                        op[i].op.set.p->name,
-                       op[i].op.set.p->s.value);
+                       op[i].op.set.p->s.val);
                 break;
             case MOVE:
                 printf("Move: %6.2f %6.2f %6.2f",

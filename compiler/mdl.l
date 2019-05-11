@@ -1,6 +1,6 @@
 /* Initial C code */
 %{
-#include "y.tab.h"
+#include "../build/mdl.tab.hh"
 %}
 
 

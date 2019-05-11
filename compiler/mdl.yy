@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "../compiler/FlexLexer.h"
 #include "../compiler/parser.h"
 #include "../matrix/transformation_matrix.h"
 #include "../compiler/symbol_table.h"
@@ -16,7 +17,20 @@
   TransformationMatrix * m;
   int lastop = 0;
   int lineno = 0;
-  %}
+
+  int yyerror(const char *s)
+  {
+    printf("Error in line %d:%s\n",lineno,s);
+    return 0;
+  }
+
+  int yywrap()
+  {
+    return 1;
+  }
+
+  int yylex();
+ %}
 
 
 /* Bison Declarations */
@@ -769,20 +783,6 @@ GENERATE_RAYFILES
 };
 %%
 
-
-/* Other C stuff */
-int yyerror(char *s)
-{
-  printf("Error in line %d:%s\n",lineno,s);
-  return 0;
-}
-
-int yywrap()
-{
-  return 1;
-}
-
-
 extern FILE *yyin;
 
 
@@ -795,7 +795,9 @@ int main(int argc, char **argv) {
   //MY_MAIN IN ORDER TO RUN YOUR CODE
 
   print_pcode();
-  //my_main();
+  my_main();
+
+  printf("WASSUP\n");
 
   return 0;
 }

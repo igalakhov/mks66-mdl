@@ -31,6 +31,10 @@ extern float_mat SPECULAR_EXPONENT;
 #define DEFAULT_COLOR_G (char) 0
 #define DEFAULT_COLOR_B (char) 0
 
+// parsing
+#define MAX_SYMBOLS 512
+#define MAX_COMMANDS 1024
+
 // color structure
 struct color {
     unsigned char r;
