@@ -64,9 +64,13 @@ SYMBOL *SymbolTable::add_symbol(const char *name, int type, void *data) {
         case SYM_LIGHT:
             t->s.l = (struct light *) data;
             break;
-        case SYM_VALUE:
-            t->s.val = *((double *) data);
+        case SYM_VALUE: {
+            if(data == nullptr)
+                t->s.val = 0;
+            else
+                t->s.val = *((double *) data);
             break;
+        }
         case SYM_FILE:
             break;
 

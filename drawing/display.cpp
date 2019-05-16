@@ -101,8 +101,8 @@ void Display::save(std::string file_name, std::string extention){
     std::string to = no_extention + file_name.substr(file_name.rfind('.') + 1);
 
 
-    std::cout << from << std::endl;
-    std::cout << to << std::endl;
+//    std::cout << from << std::endl;
+//    std::cout << to << std::endl;
 
     // write values in display to file
     std::ofstream img_file;

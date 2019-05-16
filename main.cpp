@@ -61,6 +61,8 @@ void my_main() {
     // actually run the commands
     for (int i = 0; i < lastop; i++) {
 
+        //std::cout << "yes" << std::endl;
+
         //printf("%d: \n", i);
         struct command cur = op[i];
         switch (cur.opcode) {
@@ -107,7 +109,7 @@ void my_main() {
                            cur.op.sphere.d[2],
                            cur.op.sphere.r);
                 if (cur.op.sphere.cs != nullptr) {
-                    s->lookup_symbol(cur.op.sphere.cs->name)->s.m->print_self();
+                    //s->lookup_symbol(cur.op.sphere.cs->name)->s.m->print_self();
                     triangle_matrix->apply_transformation(s->lookup_symbol(cur.op.sphere.cs->name)->s.m);
                 }else
                     triangle_matrix->apply_transformation(cord_stack->peek());
@@ -184,7 +186,7 @@ void my_main() {
             }
 
             case SAVE_COORDS: {
-                cord_stack->peek()->print_self();
+                //cord_stack->peek()->print_self();
                 s->lookup_symbol(cur.op.save_coordinate_system.p->name)->s.m = cord_stack->peek();
                 //s->add_symbol(cur.op.save_coordinate_system.p->name, SYM_MATRIX, cord_stack->peek());
                 break;
@@ -258,7 +260,7 @@ void my_main() {
 
                 // default case (this means the command isn't implemented)
             default: {
-                std::cout << "This command is not yet implemented" << std::endl;
+                printf("Command with opcode [%d] is not yet implemented\n", cur.opcode);
                 break;
             }
         }
