@@ -6,7 +6,7 @@
 // lighting (in settings.cpp)
 extern float_mat view[3];
 extern float_mat ambient[3];
-extern float_mat light[][2][3];
+//extern float_mat light[][2][3];
 
 extern float_mat ambient_reflect[3];
 extern float_mat diffuse_reflect[3];
@@ -18,8 +18,8 @@ extern float_mat SPECULAR_EXPONENT;
 #define ENABLE_BACKFACE_CULLING true
 #define Z_BUFFER_MIN -1000
 
-#define SPHERE_NUM_STEPS 250
-#define TORUS_NUM_STEPS 250
+#define SPHERE_NUM_STEPS 150
+#define TORUS_NUM_STEPS 150
 
 // image stuff
 #define IMAGE_HEIGHT 500

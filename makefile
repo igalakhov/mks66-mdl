@@ -6,18 +6,21 @@ OBJECTS=$(BUILD_FOLDER)/main.o $(BUILD_FOLDER)/drawer.o $(BUILD_FOLDER)/display.
 	$(BUILD_FOLDER)/settings.o $(BUILD_FOLDER)/symbol_table.o $(BUILD_FOLDER)/parser.o
 
 
-all: lexer parser $(OBJECTS)
+all: prepare $(BUILD_FOLDER)/bison_parser.o $(BUILD_FOLDER)/flex_lexer.o $(OBJECTS)
 	g++ -o mdl.out $(OBJECTS) $(BUILD_FOLDER)/bison_parser.o $(BUILD_FOLDER)/flex_lexer.o -ll
 	clear
 	./mdl.out script.mdl
 
+prepare:
+	mkdir -p build
+
 # flex and yacc stuff
 
-parser: compiler/mdl.yy
+$(BUILD_FOLDER)/bison_parser.o: compiler/mdl.yy
 	bison -b $(BUILD_FOLDER)/mdl -d -v compiler/mdl.yy
 	g++ -c -o $(BUILD_FOLDER)/bison_parser.o $(BUILD_FOLDER)/mdl.tab.cc
 
-lexer: compiler/mdl.l
+$(BUILD_FOLDER)/flex_lexer.o: compiler/mdl.l
 	flex -o $(BUILD_FOLDER)/lex.yy.cc -I compiler/mdl.l
 	g++ -o $(BUILD_FOLDER)/flex_lexer.o -c $(BUILD_FOLDER)/lex.yy.cc
 
@@ -76,10 +79,7 @@ $(BUILD_FOLDER)/symbol_table.o: compiler/symbol_table.cpp settings.h
 $(BUILD_FOLDER)/parser.o: compiler/parser.cpp settings.h
 	g++ -std=c++11 -o $(BUILD_FOLDER)/parser.o -c compiler/parser.cpp
 
-clean:
-	touch fakefile.o
-	touch fakefile.h.gch
-	touch main.out
-	rm *.o
-	rm main.out
-	rm *.h.gch
+remake-build:
+	rm -rf build/
+	mkdir build
+	make

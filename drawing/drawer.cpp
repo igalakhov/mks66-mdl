@@ -18,8 +18,8 @@ void Drawer::draw_points(PointMatrix * m){
     }
 }
 
-// draw polygons
-void Drawer::draw_polygons(TriangleMatrix * m){
+// draw polygons with ambient and constants
+void Drawer::draw_polygons(TriangleMatrix * m, std::vector<double **> &sources, struct floating_color * ambient, struct constants * cons){
     int n = m->size();
     float_mat * s = m->start();
 
@@ -53,7 +53,7 @@ void Drawer::draw_polygons(TriangleMatrix * m){
 
             // random colors because no lighting or z buffering
 
-            cur_color = *total_lighting(N);
+            cur_color = *total_lighting(N, sources, ambient, cons);
 
 //            cur_color.r = (unsigned char)(std::rand() % 255);
 //            cur_color.g = (unsigned char)(std::rand() % 255);

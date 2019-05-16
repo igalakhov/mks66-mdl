@@ -38,6 +38,7 @@ void MDLParser::run_file(EdgeMatrix * edge_matrix, TriangleMatrix * triangle_mat
                     std::stof(args.at(2))
             ));
         } else if(str == "rotate"){
+        } else if(str == "rotate"){
             std::getline(file, str);
             trim(str);
             args = split_string(str);
@@ -122,16 +123,16 @@ void MDLParser::run_file(EdgeMatrix * edge_matrix, TriangleMatrix * triangle_mat
             trim(str);
             args = split_string(str);
 
-            add_box(triangle_matrix,
-                    std::stof(args.at(0)),
-                    std::stof(args.at(1)),
-                    std::stof(args.at(2)),
-                    std::stof(args.at(3)),
-                    std::stof(args.at(4)),
-                    std::stof(args.at(5)));
+//            add_box(triangle_matrix,
+//                    std::stof(args.at(0)),
+//                    std::stof(args.at(1)),
+//                    std::stof(args.at(2)),
+//                    std::stof(args.at(3)),
+//                    std::stof(args.at(4)),
+//                    std::stof(args.at(5)));
 
             triangle_matrix->apply_transformation(cstack->peek());
-            drawer->draw_polygons(triangle_matrix);
+            //drawer->draw_polygons(triangle_matrix);
             triangle_matrix->clear();
 
         } else if (str == "sphere"){
@@ -139,14 +140,14 @@ void MDLParser::run_file(EdgeMatrix * edge_matrix, TriangleMatrix * triangle_mat
             trim(str);
             args = split_string(str);
 
-            add_sphere(triangle_matrix,
-                    std::stof(args.at(0)),
-                    std::stof(args.at(1)),
-                    std::stof(args.at(2)),
-                    std::stof(args.at(3)));
+//            add_sphere(triangle_matrix,
+//                    std::stof(args.at(0)),
+//                    std::stof(args.at(1)),
+//                    std::stof(args.at(2)),
+//                    std::stof(args.at(3)));
 
             triangle_matrix->apply_transformation(cstack->peek());
-            drawer->draw_polygons(triangle_matrix);
+            //drawer->draw_polygons(triangle_matrix);
             triangle_matrix->clear();
 
         } else if (str == "torus") {
@@ -154,15 +155,15 @@ void MDLParser::run_file(EdgeMatrix * edge_matrix, TriangleMatrix * triangle_mat
             trim(str);
             args = split_string(str);
 
-            add_torus(triangle_matrix,
-                      std::stof(args.at(0)),
-                      std::stof(args.at(1)),
-                      std::stof(args.at(2)),
-                      std::stof(args.at(3)),
-                      std::stof(args.at(4)));
+//            add_torus(triangle_matrix,
+//                      std::stof(args.at(0)),
+//                      std::stof(args.at(1)),
+//                      std::stof(args.at(2)),
+//                      std::stof(args.at(3)),
+//                      std::stof(args.at(4)));
 
             triangle_matrix->apply_transformation(cstack->peek());
-            drawer->draw_polygons(triangle_matrix);
+            //drawer->draw_polygons(triangle_matrix);
             triangle_matrix->clear();
 
 

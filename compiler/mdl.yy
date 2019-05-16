@@ -10,7 +10,7 @@
 
 #define YYERROR_VERBOSE 1
 
-  SymbolTable * s = new SymbolTable();
+  //SymbolTable * s = new SymbolTable();
   struct light *l;
   struct constants *c;
   struct command op[MAX_COMMANDS];
@@ -791,13 +791,8 @@ int main(int argc, char **argv) {
   yyin = fopen(argv[1],"r");
 
   yyparse();
-  //COMMENT OUT PRINT_PCODE AND UNCOMMENT
-  //MY_MAIN IN ORDER TO RUN YOUR CODE
 
-  print_pcode();
   my_main();
-
-  printf("WASSUP\n");
 
   return 0;
 }

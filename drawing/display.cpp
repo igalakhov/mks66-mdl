@@ -92,11 +92,21 @@ void Display::set(int x, int y, float_mat z, struct color * to_set){
 
 // default saves as ppm
 // change extention to save as
-void Display::save(std::string file_name, std::string){
+void Display::save(std::string file_name, std::string extention){
+
+
+    std::string no_extention = file_name.substr(0, file_name.rfind('.') + 1);
+
+    std::string from = no_extention + "ppm";
+    std::string to = no_extention + file_name.substr(file_name.rfind('.') + 1);
+
+
+    std::cout << from << std::endl;
+    std::cout << to << std::endl;
 
     // write values in display to file
     std::ofstream img_file;
-    img_file.open(file_name, std::ofstream::trunc);
+    img_file.open(from, std::ofstream::trunc);
 
     img_file << "P3\n" << IMAGE_WIDTH << " " << IMAGE_HEIGHT << "\n" << MAX_COLOR << "\n";
 
@@ -109,6 +119,10 @@ void Display::save(std::string file_name, std::string){
     }
 
     img_file.close();
+
+    std::system(("convert " + from + " " + to).c_str());
+    std::system(("rm " + from).c_str());
+
 
 }
 

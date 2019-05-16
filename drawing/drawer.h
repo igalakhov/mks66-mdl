@@ -3,6 +3,7 @@
 //
 #include "display.h"
 #include "../matrix/edge_matrix.h"
+#include "../compiler/symbol_table.h"
 
 #ifndef WORK_01_LINE_DRAWER_H
 #define WORK_01_LINE_DRAWER_H
@@ -24,7 +25,7 @@ public:
     // drawing basics
     void draw_points(PointMatrix *);
     void draw_edges(EdgeMatrix * );
-    void draw_polygons(TriangleMatrix *);
+    void draw_polygons(TriangleMatrix *, std::vector<double **> &, floating_color *, constants *);
 
     void draw_line(int, int, float_mat, int, int, float_mat);
     void draw_line_new(int, int, float_mat, int, int, float_mat);

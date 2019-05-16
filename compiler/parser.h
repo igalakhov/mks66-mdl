@@ -13,6 +13,7 @@
 #include "../settings.h"
 
 extern int lastop;
+extern SymbolTable * s;
 
 #define Ka 0
 #define Kd 1

@@ -4,6 +4,7 @@
 #include "symbol_table.h"
 #include "../build/mdl.tab.hh"
 
+auto s = new SymbolTable();
 
 void print_pcode()
 {

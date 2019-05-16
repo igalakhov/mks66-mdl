@@ -4,19 +4,25 @@
 
 #include "lighting.h"
 
-color *total_lighting(float_mat *normal){
+color *total_lighting(float_mat *normal, std::vector<double **> &sources, struct floating_color * ambient_color, struct constants * cons){
     float r = 0;
     float g = 0;
     float b = 0;
-    floating_color * cur;
-    for(int i = 0; i < 3; i++){
-        cur = single_lighting(normal, light[i]);
-        r += cur->r;
-        g += cur->g;
-        b += cur->b;
+    floating_color * cur_color;
+//    for(int i = 0; i < 3; i++){
+//        //cur = single_lighting(normal, light[i]);
+////        r += cur->r;
+////        g += cur->g;
+////        b += cur->b;
+//    }
+    for(double ** cur_source : sources){
+        cur_color = single_lighting(normal, cur_source, cons);
+        r += cur_color->r;
+        g += cur_color->g;
+        b += cur_color->b;
     }
     // add ambient only once
-    floating_color *ambient = calculate_ambient();
+    floating_color *ambient = calculate_ambient(ambient_color, cons);
     r += ambient->r;
     g += ambient->g;
     b += ambient->b;
@@ -30,8 +36,8 @@ color *total_lighting(float_mat *normal){
 
     return ret;
 }
-
-floating_color *single_lighting(float_mat *normal, float_mat single_light[2][3]) {
+//
+floating_color *single_lighting(float_mat *normal, double ** source, struct constants * cons) {
 //    printf("light position: (%f, %f, %f)\n", single_light[0][0], single_light[0][1], single_light[0][2]);
 //    printf("light: (%f, %f, %f)\n", single_light[1][0], single_light[1][1], single_light[1][2]);
 //    printf("normal: (%f, %f, %f)\n", single_light[1][0], single_light[1][1], single_light[1][2]);
@@ -40,8 +46,8 @@ floating_color *single_lighting(float_mat *normal, float_mat single_light[2][3])
 
 
     //floating_color *ambient = calculate_ambient();
-    floating_color *diffuse = calculate_diffuse(normal, single_light);
-    floating_color *specular = calculate_specular(normal, single_light); // calculate this last, as it modifies the normal
+    floating_color *diffuse = calculate_diffuse(normal, source, cons);
+    floating_color *specular = calculate_specular(normal, source, cons); // calculate this last, as it modifies the normal
 
     //printf("ambient: %f, %f, %f\n", ambient->r, ambient->g, ambient->b);
 //    printf("diffuse: %f, %f, %f\n", diffuse->r, diffuse->g, diffuse->b);
@@ -69,8 +75,8 @@ floating_color *single_lighting(float_mat *normal, float_mat single_light[2][3])
 
     return ret;
 }
-
-floating_color *calculate_diffuse(float_mat *normal, float_mat light[2][3]) {
+//
+floating_color *calculate_diffuse(float_mat *normal, double ** light, struct constants * cons) {
     auto ret = (floating_color *) std::malloc(sizeof(floating_color));
 
     ret->r = light[1][0];
@@ -83,14 +89,17 @@ floating_color *calculate_diffuse(float_mat *normal, float_mat light[2][3]) {
     //printf("%f\n", dot);
     multiply_constant(ret, dot);
     multiply_through(ret, diffuse_reflect);
+    ret->r *= cons->r[DIFFUSE_R];
+    ret->g *= cons->g[DIFFUSE_R];
+    ret->b *= cons->b[DIFFUSE_R];
     //fix_color(ret);
 
     //printf("%f, %f, %f\n", ret->r, ret->g, ret->b);
 
     return ret;
 }
-
-floating_color *calculate_specular(float_mat *normal, float_mat light[2][3]) {
+//
+floating_color *calculate_specular(float_mat *normal, double ** light, struct constants * cons) {
     auto ret = (floating_color *) std::malloc(sizeof(floating_color));
 
     // copy the normal
@@ -103,7 +112,14 @@ floating_color *calculate_specular(float_mat *normal, float_mat light[2][3]) {
     ret->g = light[1][1];
     ret->b = light[1][2];
 
-    float_mat first_dot = dot_product(normal, light[0]);
+    // copy light
+    auto light_pos = (double *) std::malloc(sizeof(double) * 3);
+    light_pos[0] = light[0][0];
+    light_pos[1] = light[0][1];
+    light_pos[2] = light[0][2];
+    normalize_in_place(light_pos);
+
+    float_mat first_dot = dot_product(normal, light_pos);
 
     if (first_dot < 0) {
         ret->r = ret->g = ret->b = 0;
@@ -111,12 +127,15 @@ floating_color *calculate_specular(float_mat *normal, float_mat light[2][3]) {
     }
 
     scalar_mult(normal_copy, first_dot * 2);
-    subtract(normal_copy, light[0]);
+    subtract(normal_copy, light_pos);
     float_mat second_dot = dot_product(normal_copy, view);
     if(second_dot < 0)
         second_dot = 0; // this line
-    multiply_through(ret, specular_reflect);
-    multiply_constant(ret, std::pow(second_dot, SPECULAR_EXPONENT));
+    //multiply_through(ret, specular_reflect);
+    ret->r *= cons->r[SPECULAR_R];
+    ret->g *= cons->g[SPECULAR_R];
+    ret->b *= cons->b[SPECULAR_R];
+    multiply_constant(ret, std::pow(second_dot, 4.0));
     //fix_color(ret);
 
     std::free(normal_copy);
@@ -124,25 +143,29 @@ floating_color *calculate_specular(float_mat *normal, float_mat light[2][3]) {
 
     return ret;
 }
-
-floating_color *calculate_ambient() {
+//
+floating_color *calculate_ambient(struct floating_color * ambient_color, struct constants * cons) {
     auto ret = (floating_color *) std::malloc(sizeof(floating_color));
 
-    copy_color(ret, ambient);
-    multiply_through(ret, ambient_reflect);
-    //fix_color(ret);
+    ret->r = (ambient_color->r * cons->r[AMBIENT_R]);
+    ret->g = (ambient_color->g * cons->g[AMBIENT_R]);
+    ret->b = (ambient_color->b * cons->b[AMBIENT_R]);
+
+    //printf("constants: %f, %f, %f", cons->r[AMBIENT_R], cons->g[AMBIENT_R], cons->b[AMBIENT_R]);
+
+    //printf("ambient: %f, %f, %f\n", ret->r, ret->g, ret->b);
 
     return ret;
 
 }
-
-// utils
+//
+//// utils
 void copy_color(floating_color *to, float_mat *from) {
     to->r = from[0];
     to->g = from[1];
     to->b = from[2];
 }
-
+//
 void multiply_through(floating_color *c, float_mat *m) {
     c->r = c->r * m[0];
     c->g = c->g * m[0];
@@ -160,7 +183,7 @@ void multiply_constant(floating_color *c, float_mat val) {
     c->g *= val;
     c->b *= val;
 }
-
+//
 float_mat constrain(float_mat val, float_mat lo, float_mat hi) {
     if (val < lo)
         return lo;

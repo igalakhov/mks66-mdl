@@ -4,7 +4,7 @@
 
 #include "3d.h"
 
-void add_box(TriangleMatrix *m, float x, float y, float z, float w, float h, float d) {
+void add_box(TriangleMatrix *m, double x, double y, double z, double w, double h, double d) {
     float x0 = x;
     float y0 = y;
     float z0 = z;
@@ -37,7 +37,7 @@ void add_box(TriangleMatrix *m, float x, float y, float z, float w, float h, flo
     m->add_triangle(x1, y0, z0, x1, y1, z0, x1, y1, z1);
 }
 
-void add_torus(TriangleMatrix *m, float tx, float ty, float tz, float r, float R) {
+void add_torus(TriangleMatrix *m, double tx, double ty, double tz, double r, double R) {
     auto torus_points = generate_torus_points(tx, ty, tz, r, R);
 
     int p1, p2, p3, p4;
@@ -75,7 +75,7 @@ void add_torus(TriangleMatrix *m, float tx, float ty, float tz, float r, float R
     delete torus_points;
 }
 
-PointMatrix *generate_torus_points(float tx, float ty, float tz, float r, float R) {
+PointMatrix *generate_torus_points(double tx, double ty, double tz, double r, double R) {
     auto ret = new PointMatrix();
 
     float_mat cur_r, cur_c;
@@ -97,8 +97,10 @@ PointMatrix *generate_torus_points(float tx, float ty, float tz, float r, float 
     return ret;
 }
 
-void add_sphere(TriangleMatrix *m, float cx, float cy, float cz, float r) {
+void add_sphere(TriangleMatrix *m, double cx, double cy, double cz, double r) {
     auto sphere_points = generate_sphere_points(cx, cy, cz, r);
+
+    //printf("NUMBER OF SPHERE GENERATED POINTS: %d\n", sphere_points->size());
 
     auto s = sphere_points->start();
 
@@ -162,7 +164,7 @@ void add_sphere(TriangleMatrix *m, float cx, float cy, float cz, float r) {
     delete sphere_points;
 }
 
-PointMatrix *generate_sphere_points(float cx, float cy, float cz, float r) {
+PointMatrix *generate_sphere_points(double cx, double cy, double cz, double r) {
     auto ret = new PointMatrix();
     float_mat rot, circ;
     float_mat x, y, z;

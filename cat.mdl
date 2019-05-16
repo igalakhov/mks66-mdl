@@ -1,0 +1,9 @@
+constants soul 0.2 0.8 1 0.2 0.8 1 0 0 1
+push
+move 250 175 0
+scale 5 5 5
+rotate x 20
+rotate y 20
+mesh soul :scratch_cat.obj
+display
+save cat.ppm

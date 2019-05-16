@@ -1,20 +1,28 @@
-// Note: This uses the light values in the provided source code.
-constants shiny_purple 0.3 0.2 0.8 0.3 0 0 0.3 0.2 0.8
-constants shiny_teal 0.3 0.0 0.0 0.3 0.2 0.8 0.3 0.2 0.8
-constants dull_yellow 0.3 0.8 0.2 0.3 0.8 0.2 0 0 0
+constants hand 0.5 0.5 0.5 0.5 0.5 0.5 0.3 0.3 0.3
+constants mind 0.3 0.8 1 0.3 0.8 1 0 0 1
+constants soul 0.2 0.8 1 0.2 0.8 1 0 0 1
+constants reality 1 1 1 0 0 1 0 0 1
+constants space 0.2 0 0 0.2 0 0 0.2 0.2 1
+constants power 0.2 0.2 1 0.2 0 0 0.2 0.2 1
+constants time 0 0 0 0.2 0.5 1 0 0 1
+light l -0.5 0.8 1 255 255 255
+light l2 0.5 -1 1 100 100 100
 push
-move 250 250 0
-sphere shiny_purple -100 150 0 80
-sphere shiny_teal 100 150 0 80
+move 275 75 0
+rotate x -10
+rotate z 0
+rotate y 30
 push
-rotate x 45
-rotate y 45
-box -40 40 40 80 80 80
+scale 20 20 20
+rotate x -90
+rotate z 180
+mesh hand :new_hand.obj
 pop
-push
-move 0 -150 0
-rotate x 30
-scale 1 1 0.5
-torus dull_yellow 0 0 0 30 175
+rotate x 90
+torus mind -30 60 -130 30 30
+torus soul 40 65 -200 10 10
+torus reality -5 75 -215 10 10
+torus space -55 75 -210 10 10
+torus power -95 50 -190 10 10
 display
-save face.png
+save hand.png
