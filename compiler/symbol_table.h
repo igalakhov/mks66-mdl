@@ -7,6 +7,8 @@
 
 #include <iostream>
 
+#include <string.h>
+
 #include "../matrix/transformation_matrix.h"
 #include "../settings.h"
 
